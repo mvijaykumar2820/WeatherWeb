@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>weatherWeb</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://cdn.iconscout.com/icon/free/png-256/free-ios-weather-icon-download-in-svg-png-gif-file-formats--11-pack-user-interface-icons-461610.png?f=webp&w=256" type="image/png">
+</head>
+<body>
+  <nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search City" aria-label="Search"/>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+  
+  <div class="flex-spacer"></div>
+  
+  <div class="weather-container">
+    <div class="transparent-container">
+      <div class="place-info">
+        <h2 class="city-name">Loading...</h2>
+        <div class="weather-condition">
+          <span class="condition-text">Checking weather</span>
+          <img src="https://cdn-icons-png.flaticon.com/512/1146/1146869.png" alt="Weather icon" class="condition-icon">
+          <div class="local-time">
+            <p><span>--:--</span></p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="weather-details">
+        <div class="detail-row">
+          <div class="detail-item">
+            <p class="detail-label">Wind</p>
+            <p class="detail-value wind-value">-- m/s</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">Visibility</p>
+            <p class="detail-value visibility-value">-- km</p>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <div class="detail-item">
+            <p class="detail-label">Air Quality</p>
+            <p class="detail-value air-quality-value">--</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">Humidity</p>
+            <p class="detail-value humidity-value">--%</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="temperature">
+        <p class="temp-value">--</p>
+      </div>
+      
+      <div class="hover-indicator">
+        <span>Hover for 5-day forecast</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="forecast-panel">
+      <h3>5-Day Forecast</h3>
+      <div class="forecast-container">
+        <div class="forecast-loading">Loading forecast data...</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="flex-spacer"></div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
