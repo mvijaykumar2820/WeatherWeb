@@ -66,5 +66,5 @@ const API_KEY = "YOUR_API_KEY";
 <br>For any inquiries or collaborations, feel free to reach out:<br>
 	•	✉️ Email: mvijaykumar2820@gmail.com<br>
 	•	💻 GitHub: https://github.com/mvijaykumar2820<br>
-	•	💼 LinkedIn: linkedin.com/in/m-vijay-kumar2820<br>
+	•	💼 LinkedIn: https://www.linkedin.com/in/m-vijay-kumar2820/<br>
 
