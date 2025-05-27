@@ -19,6 +19,14 @@ It’s built with HTML, CSS, and JavaScript and fetches live data from the OpenW
 
 ⸻
 
+📲 Screenshots<br>
+<br> main Page
+
+<img src="mainPage.png" width="100%" />
+
+5-Day-Forecast
+<img src="5-Day-Forecast.png" width="100%" />
+
 📚 Additional Information<br>
 	<br>•	Get city name or area by longitude/latitude → OpenWeather Geocoding API<br>
 	•	Get current location weather → OpenWeather Current API<br>
