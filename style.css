@@ -338,115 +338,140 @@ body {
   
   .transparent-container, .forecast-panel {
     width: 95%;
-    padding: 20px;
+    padding: 25px 15px;
     border-radius: 10px;
   }
   
+  .place-info {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 15px;
+  }
+  
   .city-name {
-    font-size: 24px;
+    font-size: 26px;
   }
   
   .weather-condition {
-    flex-wrap: wrap;
-  }
-  
-  .local-time {
-    margin-left: 0;
-    margin-top: 5px;
-    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
   }
   
   .condition-text {
-    font-size: 16px;
+    font-size: 14px;
+    margin-right: 8px;
+    flex: 0 1 auto;
   }
   
   .condition-icon {
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    margin-right: 8px;
+  }
+  
+  .local-time {
+    flex: 0 0 auto;
+    margin-left: 0;
+    font-size: 14px;
   }
   
   .weather-details {
-    margin-top: 80px;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
   }
   
   .detail-row {
-    flex-direction: column;
-    margin-bottom: 15px;
-  }
-  
-  .detail-item {
-    width: 100%;
-    margin-bottom: 15px;
-  }
-  
-  .detail-label {
-    display: inline-block;
-    width: 40%;
-    margin-bottom: 0;
-  }
-  
-  .detail-value {
-    display: inline-block;
-    width: 55%;
-    text-align: right;
-  }
-  
-  .temperature {
-    bottom: 15px;
-    right: 15px;
-  }
-  
-  .temp-value {
-    font-size: 46px;
-  }
-  
-  .temp-value::after {
-    font-size: 22px;
-    top: 6px;
-  }
-  
-  .forecast-panel {
-    margin-top: 10px;
-    padding: 15px;
-  }
-  
-  .forecast-panel h3 {
-    font-size: 18px;
-    margin-top: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
     margin-bottom: 10px;
   }
   
-  .forecast-item {
-    min-width: 80px;
-    padding: 10px;
+  .detail-item {
+    width: auto; /* Remove fixed width */
+    min-width: 0; /* Allow shrinking */
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 8px;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: hidden; /* Prevent overflow */
   }
   
-  .forecast-day {
-    font-size: 12px;
-  }
-  
-  .forecast-icon {
-    width: 30px;
-    height: 30px;
-  }
-  
-  .forecast-temp {
-    font-size: 16px;
-  }
-  
-  .hover-indicator {
-    display: none;
-  }
-  
-  .weather-container::after {
-    content: "Tap for forecast";
-    position: absolute;
-    bottom: -25px;
+  .detail-label {
+    display: block;
     width: 100%;
-    text-align: center;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 3px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .detail-value {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .temperature {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .temp-value {
+    font-size: 50px;
+  }
+  
+  .temp-value::after {
+    font-size: 24px;
+    top: 6px;
+  }
+}
+
+/* For even smaller screens */
+@media (max-width: 350px) {
+  .transparent-container {
+    padding: 20px 12px;
+  }
+  
+  .city-name {
+    font-size: 22px;
+  }
+  
+  .condition-text {
+    font-size: 12px;
+  }
+  
+  .condition-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .local-time {
+    font-size: 12px;
+  }
+  
+  .detail-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  
+  .detail-item {
+    padding: 8px 6px;
   }
 }
 
@@ -471,4 +496,82 @@ html, body {
 
 .mobile-view .hover-indicator {
   display: none;
+}
+
+/* Permission modal styling */
+.permission-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.permission-modal.visible {
+  opacity: 1;
+}
+
+.permission-dialog {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.permission-modal.visible .permission-dialog {
+  transform: translateY(0);
+}
+
+.permission-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
+}
+
+.permission-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+}
+
+.permission-body {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.permission-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
 }
