@@ -213,18 +213,19 @@ function updateWeatherDisplay(data) {
 }
 
 function updateLocationClock(timezoneOffset) {
-  // Get current UTC time in milliseconds
+  // Get the current time in UTC (as a timestamp in milliseconds)
   const now = new Date();
-  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const utcMillis = now.getTime() - (now.getTimezoneOffset() * 60000);
   
-  // Create new date object for the local time in the city
-  // timezoneOffset from API is in seconds, so convert to milliseconds
-  const cityTime = new Date(utcTime + (timezoneOffset * 1000));
+  // Calculate the city's local time by applying the API's timezone offset 
+  // The API provides timezone offset in seconds, so convert to milliseconds
+  const cityTimeMillis = utcMillis + (timezoneOffset * 1000);
+  const cityTime = new Date(cityTimeMillis);
   
   const timeString = cityTime.toLocaleTimeString([], { 
     hour: '2-digit', 
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit' 
   });
   
   localTime.textContent = timeString;
