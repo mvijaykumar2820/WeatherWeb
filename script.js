@@ -179,6 +179,8 @@ document.querySelector('.weather-container').addEventListener('mouseenter', func
   }
 });
 
+let clockInterval;
+
 function updateWeatherDisplay(data) {
   currentCity = data.name;
   forecastData = null;
@@ -191,12 +193,13 @@ function updateWeatherDisplay(data) {
   const iconCode = data.weather[0].icon;
   conditionIcon.src = getWeatherIcon(condition.toLowerCase());
   
-  const timestamp = data.dt * 1000; // Convert to milliseconds
-  const localTimeString = new Date(timestamp).toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  });
-  localTime.textContent = localTimeString;
+  // Start real-time clock
+  if (clockInterval) {
+    clearInterval(clockInterval);
+  }
+  
+  updateRealTimeClock();
+  clockInterval = setInterval(updateRealTimeClock, 1000);
   
   tempValue.textContent = Math.round(data.main.temp);
   
@@ -206,6 +209,16 @@ function updateWeatherDisplay(data) {
   
   const airQuality = calculateAirQuality(data.main.humidity, data.wind.speed);
   airQualityValue.textContent = airQuality;
+}
+
+function updateRealTimeClock() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  localTime.textContent = timeString;
 }
 
 async function getForecastData(city) {
