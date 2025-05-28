@@ -14,16 +14,152 @@ const searchInput = document.querySelector('input[type="search"]');
 const forecastContainer = document.querySelector('.forecast-container');
 
 document.addEventListener('DOMContentLoaded', () => {
-
   cityName.textContent = "Weather App";
-  conditionText.textContent = "Locating you...";
+  conditionText.textContent = "Waiting for permission...";
   
+  // Check if the browser supports the Permissions API
+  if (navigator.permissions && navigator.permissions.query) {
+    // Modern browsers support checking permission state
+    navigator.permissions.query({ name: 'geolocation' })
+      .then(permissionStatus => {
+        handlePermissionStatus(permissionStatus);
+        
+        // Set up listener for permission changes
+        permissionStatus.onchange = () => {
+          handlePermissionStatus(permissionStatus);
+        };
+      })
+      .catch(error => {
+        // Fall back to standard geolocation request
+        requestGeolocation();
+      });
+  } else {
+    // Older browsers don't support permission checking
+    requestGeolocation();
+  }
+});
 
+function handlePermissionStatus(permissionStatus) {
+  switch(permissionStatus.state) {
+    case 'granted':
+      // User has already granted permission
+      cityName.textContent = "Getting your location...";
+      getGeolocation();
+      break;
+    case 'prompt':
+      // User hasn't made a decision yet
+      cityName.textContent = "Location Permission Required";
+      conditionText.textContent = "Please allow access to see your local weather";
+      displayLocationPrompt();
+      break;
+    case 'denied':
+      // User has denied permission
+      cityName.textContent = "Location Access Denied";
+      conditionText.textContent = "Please enable location permission in your browser settings";
+      displayPermissionInstructions();
+      break;
+  }
+}
+
+function displayLocationPrompt() {
+  // Create a modal overlay for permission request
+  const permissionModal = document.createElement('div');
+  permissionModal.className = 'permission-modal';
+  
+  permissionModal.innerHTML = `
+    <div class="permission-dialog">
+      <div class="permission-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/1146/1146869.png" alt="Weather icon" class="permission-icon">
+        <h3>Location Access</h3>
+      </div>
+      <div class="permission-body">
+        <p>This app needs your location to show accurate weather information for your area.</p>
+      </div>
+      <div class="permission-footer">
+        <button class="btn btn-secondary" id="deny-location">Not Now</button>
+        <button class="btn btn-primary" id="allow-location">Allow Access</button>
+      </div>
+    </div>
+  `;
+  
+  // Add to body (not inside the weather container)
+  document.body.appendChild(permissionModal);
+  
+  // Add CSS for animation
+  setTimeout(() => {
+    permissionModal.classList.add('visible');
+  }, 10);
+  
+  // Add event listeners
+  document.getElementById('allow-location').addEventListener('click', () => {
+    permissionModal.classList.remove('visible');
+    setTimeout(() => {
+      permissionModal.remove();
+      getGeolocation();
+    }, 300); // Matches transition duration
+  });
+  
+  document.getElementById('deny-location').addEventListener('click', () => {
+    permissionModal.classList.remove('visible');
+    setTimeout(() => {
+      permissionModal.remove();
+      cityName.textContent = "Search for a city";
+      conditionText.textContent = "Use the search box above";
+    }, 300);
+  });
+}
+
+function displayPermissionInstructions() {
+  const instructionsContainer = document.createElement('div');
+  instructionsContainer.className = 'permission-container';
+  instructionsContainer.innerHTML = `
+    <p>You've denied location access. To see your local weather, you'll need to:</p>
+    <ol>
+      <li>Click the lock/info icon in your browser's address bar</li>
+      <li>Find "Location" or "Site Settings"</li>
+      <li>Change the permission to "Allow"</li>
+      <li>Refresh this page</li>
+    </ol>
+    <p>Or use the search box above to look up a location manually.</p>
+  `;
+  
+  // Insert the container before the weather details
+  const weatherDetails = document.querySelector('.weather-details');
+  weatherDetails.parentNode.insertBefore(instructionsContainer, weatherDetails);
+}
+
+function requestGeolocation() {
+  cityName.textContent = "Weather App";
+  conditionText.textContent = "Waiting for permission...";
+  
+  if (navigator.geolocation) {
+    const locationRequestButton = document.createElement('button');
+    locationRequestButton.textContent = "Allow Location Access";
+    locationRequestButton.className = "btn btn-primary location-button";
+    locationRequestButton.addEventListener('click', getGeolocation);
+    
+    const weatherContainer = document.querySelector('.weather-condition');
+    weatherContainer.appendChild(locationRequestButton);
+  } else {
+    cityName.textContent = "Location Unavailable";
+    conditionText.textContent = "Your browser doesn't support geolocation";
+  }
+}
+
+function getGeolocation() {
+  cityName.textContent = "Getting your location...";
+  conditionText.textContent = "Please wait...";
+  
+  // Remove any location buttons if they exist
+  const locationButton = document.querySelector('.location-button');
+  if (locationButton) locationButton.remove();
+  
   if (navigator.geolocation) {
     const locationTimeout = setTimeout(() => {
       console.warn("Geolocation timed out");
-      getWeatherByCity('New York');
-    }, 5000);
+      cityName.textContent = "Location Timeout";
+      conditionText.textContent = "Please try searching for your city";
+    }, 10000);
     
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -34,15 +170,31 @@ document.addEventListener('DOMContentLoaded', () => {
       (error) => {
         clearTimeout(locationTimeout);
         console.error('Error getting location:', error);
-        getWeatherByCity('New York');
+        cityName.textContent = "Location Error";
+        
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            conditionText.textContent = "Location permission denied";
+            displayPermissionInstructions();
+            break;
+          case error.POSITION_UNAVAILABLE:
+            conditionText.textContent = "Location information unavailable";
+            break;
+          case error.TIMEOUT:
+            conditionText.textContent = "Location request timed out";
+            break;
+          default:
+            conditionText.textContent = "Unknown error getting location";
+        }
       },
-      { timeout: 4000 } 
+      { timeout: 8000 } 
     );
   } else {
     console.error('Geolocation is not supported by this browser');
-    getWeatherByCity('New York');
+    cityName.textContent = "Not Supported";
+    conditionText.textContent = "Geolocation not available in your browser";
   }
-});
+}
 
 searchForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -55,7 +207,8 @@ searchForm.addEventListener('submit', (event) => {
 
 async function getLocationNameByCoords(lat, lon) {
   try {
-    cityName.textContent = "Getting location...";
+    cityName.textContent = "Getting your location...";
+    conditionText.textContent = "Please wait or allow location access";
     
     const response = await fetch(
       `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`
@@ -78,7 +231,7 @@ async function getLocationNameByCoords(lat, lon) {
     console.error('Error fetching location name:', error);
     cityName.textContent = "Location unavailable";
     conditionText.textContent = "Try searching for a city";
-    setTimeout(() => getWeatherByCity('New York'), 2000);
+    setTimeout(() => getWeatherByCity('Hyderabad'), 2000); // Change from 'New York' to 'Hyderabad'
   }
 }
 
