@@ -193,13 +193,14 @@ function updateWeatherDisplay(data) {
   const iconCode = data.weather[0].icon;
   conditionIcon.src = getWeatherIcon(condition.toLowerCase());
   
-  // Start real-time clock
+  // Clear any existing clock interval
   if (clockInterval) {
     clearInterval(clockInterval);
   }
   
-  updateRealTimeClock();
-  clockInterval = setInterval(updateRealTimeClock, 1000);
+  // Calculate the local time in the city based on timezone offset from API
+  updateLocationClock(data.timezone);
+  clockInterval = setInterval(() => updateLocationClock(data.timezone), 1000);
   
   tempValue.textContent = Math.round(data.main.temp);
   
@@ -211,13 +212,21 @@ function updateWeatherDisplay(data) {
   airQualityValue.textContent = airQuality;
 }
 
-function updateRealTimeClock() {
+function updateLocationClock(timezoneOffset) {
+  // Get current UTC time in milliseconds
   const now = new Date();
-  const timeString = now.toLocaleTimeString([], { 
+  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+  
+  // Create new date object for the local time in the city
+  // timezoneOffset from API is in seconds, so convert to milliseconds
+  const cityTime = new Date(utcTime + (timezoneOffset * 1000));
+  
+  const timeString = cityTime.toLocaleTimeString([], { 
     hour: '2-digit', 
     minute: '2-digit',
     second: '2-digit'
   });
+  
   localTime.textContent = timeString;
 }
 
