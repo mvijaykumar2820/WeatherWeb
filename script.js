@@ -213,20 +213,32 @@ function updateWeatherDisplay(data) {
 }
 
 function updateLocationClock(timezoneOffset) {
-  // Get the current time in UTC (as a timestamp in milliseconds)
+  // Get current UTC time directly without local timezone conversion
   const now = new Date();
-  const utcMillis = now.getTime() - (now.getTimezoneOffset() * 60000);
+  const utcTimestamp = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  );
   
-  // Calculate the city's local time by applying the API's timezone offset 
-  // The API provides timezone offset in seconds, so convert to milliseconds
-  const cityTimeMillis = utcMillis + (timezoneOffset * 1000);
-  const cityTime = new Date(cityTimeMillis);
+  // Apply the location's timezone offset (convert from seconds to milliseconds)
+  const cityTimestamp = utcTimestamp + (timezoneOffset * 1000);
+  const cityTime = new Date(cityTimestamp);
   
-  const timeString = cityTime.toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    second: '2-digit' 
-  });
+  // Format time with explicit UTC methods to avoid browser timezone influence
+  const hours = cityTime.getUTCHours().toString().padStart(2, '0');
+  const minutes = cityTime.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = cityTime.getUTCSeconds().toString().padStart(2, '0');
+  
+  // Format 12-hour time with AM/PM
+  let hour12 = hours % 12;
+  if (hour12 === 0) hour12 = 12;
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+  const timeString = `${hour12}:${minutes}:${seconds} ${ampm}`;
   
   localTime.textContent = timeString;
 }
